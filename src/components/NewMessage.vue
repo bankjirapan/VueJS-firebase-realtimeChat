@@ -1,7 +1,7 @@
 <template>
   <div class="new-message">
     <form @submit.prevent="addMessage">
-      <label for="new-message">New Message (enter to add) :</label>
+      <label for="new-message">{{name}} typing message and enter to send message:</label>
       <input type="text" name="new-message" v-model="newMessage" />
       <p class="red-text" v-if="feedback">{{ feedback }}</p>
     </form>

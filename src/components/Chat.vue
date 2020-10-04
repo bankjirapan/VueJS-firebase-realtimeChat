@@ -1,16 +1,14 @@
 <template>
   <div class="chat container">
-    <h2 class="center teal-text">INT301 Chat</h2>
+    <h2 class="center teal-text">Chat Room</h2>
 
     <div class="card">
       <div class="card-content">
         <ul class="messages" v-chat-scroll>
           <li :key="key" v-for="(message, key) in messages">
+            <span class="gray-text time">{{message.timestamp | moment("DD MMM YYYY, hh:mm:ss")}}</span>
             <span class="teal-text">{{message.name}}</span>
             <span class="gray-text text-darken-3">{{message.content}}</span>
-            <span
-              class="gray-text time"
-            >{{message.timestamp | moment("dddd, MMMM Do YYYY, h:mm:ss a")}}</span>
           </li>
         </ul>
       </div>
@@ -23,31 +21,31 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
-import NewMessage from "@/components/NewMessage";
-import { messages } from "../firebase/config";
+import NewMessage from '@/components/NewMessage'
+import { messages } from '../firebase/config'
 
 export default {
-  name: "Chat",
-  props: ["name"],
+  name: 'Chat',
+  props: ['name'],
   components: {
     NewMessage
   },
   data() {
     return {
       messages: {}
-    };
+    }
   },
   created() {
-    messages.on("value", snapshot => {
-      this.messages = snapshot.val();
-    });
+    messages.on('value', snapshot => {
+      this.messages = snapshot.val()
+    })
     // contactRef.on("value", snapshot => {
     //   this.contacts = snapshot.val();
     // });
   }
-};
+}
 </script>
 
 
