@@ -4,9 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueChatScroll from 'vue-chat-scroll'
+import VueSweetalert2 from 'vue-sweetalert2'
 
-Vue.use(require('vue-moment'));
+Vue.use(require('vue-moment'))
 Vue.use(VueChatScroll)
+Vue.use(VueSweetalert2)
+
 
 Vue.config.productionTip = false
 
