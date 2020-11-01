@@ -17,7 +17,8 @@
           <button @click="socialFacecbookLogin" class="btn light-blue darken-4">
             Enter to chat by Facebook
           </button>
-          <!-- <button class="btn teal">Enter to chat</button> -->
+
+          <!-- <button @click="testBtn" class="btn teal">Enter to chat</button> -->
         </form>
       </div>
     </div>
@@ -45,13 +46,14 @@ export default {
   },
   methods: {
     googleAuth() {
+      localStorage.removeItem("userData");
       const Firebase = new firebase.auth.GoogleAuthProvider().addScope("email");
       firebase
         .auth()
         .signInWithPopup(Firebase)
-        .then((result) => {
+        .then(async (result) => {
           let obj = {
-            isNewUser : result.additionalUserInfo.isNewUser,
+            isNewUser: result.additionalUserInfo.isNewUser,
             google_id: result.additionalUserInfo.profile.id,
             fullname: result.additionalUserInfo.profile.name,
             email: result.additionalUserInfo.profile.email,
@@ -59,18 +61,32 @@ export default {
             user_type_id: 1,
           };
 
-          const userData = users.on('value',data =>{
+          let userData = await users
+            .orderByChild("email")
+            .equalTo(obj.email)
+            .once("value")
+            .then((snapshot) => {
+              snapshot.forEach(function (data) {
+                let userDataJson = {
+                  email: data.val().email,
+                  name: data.val().fullname,
+                };
+                localStorage.setItem("userData", JSON.stringify(userDataJson));
+              });
+              return snapshot.val();
+            });
 
-            let dataJson = data.toJSON();
+          if (userData == null) {
+            this.$swal("No Permission !.");
+          } else {
+            this.$router.push({
+              name: "Chat",
+              params: { name: obj.fullname },
+            });
+          }
 
-            for(let i=0; i<dataJson.length; i++){
-              console.log(dataJson[i].email);
-            }
-
-
-          })
-
-          this.newUser(obj);
+          // Enable this line code when everyone can use chat room.
+          // this.newUser(obj);
         })
         .catch((e) => {
           console.log(e);
@@ -118,11 +134,7 @@ export default {
       }
     },
     enterChat() {
-      if (this.name) {
-        this.$router.push({ name: "Chat", params: { name: this.name } });
-      } else {
-        this.feedback = "you must enter a name to join";
-      }
+      this.$router.push({ name: "Chat", params: { name: "eiei" } });
     },
     getQuote() {
       const rand = Math.floor(Math.random() * 4);
