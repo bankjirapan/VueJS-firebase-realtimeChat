@@ -6,9 +6,11 @@
       <div class="card-content">
         <ul class="messages" v-chat-scroll>
           <li :key="key" v-for="(message, key) in messages">
-            <span class="gray-text time">{{message.timestamp | moment("DD MMM YYYY, hh:mm:ss")}}</span>
-            <span class="teal-text">{{message.name}}</span>
-            <span class="gray-text text-darken-3">{{message.content}}</span>
+            <span class="gray-text time">{{
+              message.timestamp | moment("DD MMM YYYY, hh:mm:ss")
+            }}</span>
+            <span class="teal-text">{{ message.name }}</span>
+            <span class="gray-text text-darken-3">{{ message.content }}</span>
           </li>
         </ul>
       </div>
@@ -21,31 +23,58 @@
 </template>
 
 <script>
-import moment from 'moment'
-
-import NewMessage from '@/components/NewMessage'
-import { messages } from '../firebase/config'
+import moment from "moment";
+import NewMessage from "@/components/NewMessage";
+import { messages, users } from "../firebase/config";
 
 export default {
-  name: 'Chat',
-  props: ['name'],
+  name: "Chat",
+  props: ["name"],
   components: {
-    NewMessage
+    NewMessage,
   },
   data() {
     return {
-      messages: {}
-    }
+      messages: {},
+    };
+  },
+  beforeMount() {
+    this.isAuth();
   },
   created() {
-    messages.on('value', snapshot => {
-      this.messages = snapshot.val()
-    })
+    messages.on("value", (snapshot) => {
+      this.messages = snapshot.val();
+    });
     // contactRef.on("value", snapshot => {
     //   this.contacts = snapshot.val();
     // });
-  }
-}
+  },
+  methods: {
+    async isAuth() {
+      let userDataItem = JSON.parse(localStorage.getItem("userData"));
+
+      if (userDataItem == null) {
+        this.$router.push({
+          name: "Welcome",
+        });
+      } else {
+        let userData = await users
+          .orderByChild("email")
+          .equalTo(userDataItem.email)
+          .once("value")
+          .then((snapshot) => {
+            return snapshot.val();
+          });
+
+        if (userData == null) {
+          this.$router.push({
+            name: "Welcome",
+          });
+        }
+      }
+    },
+  },
+};
 </script>
 
 
