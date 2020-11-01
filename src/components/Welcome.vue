@@ -61,33 +61,48 @@ export default {
             user_type_id: 1,
           };
 
-          let userData = await users
-            .orderByChild("email")
-            .equalTo(obj.email)
-            .once("value")
-            .then((snapshot) => {
-              snapshot.forEach(function (data) {
-                let userDataJson = {
-                  email: data.val().email,
-                  name: data.val().fullname,
-                };
-                localStorage.setItem("userData", JSON.stringify(userDataJson));
+          if (obj.isNewUser) {
+            users
+              .push(obj)
+              .then((newUser) => {
+                this.$router.push({
+                  name: "Chat",
+                  params: { name: obj.fullname },
+                });
+              })
+              .catch((e) => {
+                // console.log(e);
               });
-              return snapshot.val();
-            });
-
-          if (userData == null) {
-            this.$swal("No Permission !.");
           } else {
-            this.$router.push({
-              name: "Chat",
-              params: { name: obj.fullname },
-            });
-          }
+            let userData = await users
+              .orderByChild("email")
+              .equalTo(obj.email)
+              .once("value")
+              .then((snapshot) => {
+                snapshot.forEach(function (data) {
+                  let userDataJson = {
+                    email: data.val().email,
+                    name: data.val().fullname,
+                  };
+                  localStorage.setItem(
+                    "userData",
+                    JSON.stringify(userDataJson)
+                  );
+                });
+                return snapshot.val();
+              });
 
-          // Enable this line code when everyone can use chat room.
-          // this.newUser(obj);
+            if (userData == null) {
+              this.$swal("No Permission !.");
+            } else {
+              this.$router.push({
+                name: "Chat",
+                params: { name: obj.fullname },
+              });
+            }
+          }
         })
+
         .catch((e) => {
           console.log(e);
         });
@@ -111,27 +126,6 @@ export default {
         .catch((err) => {
           alert("Oops. " + err.message);
         });
-    },
-
-    newUser(obj) {
-      if (obj.isNewUser) {
-        users
-          .push(obj)
-          .then((newUser) => {
-            this.$router.push({
-              name: "Chat",
-              params: { name: obj.fullname },
-            });
-          })
-          .catch((e) => {
-            // console.log(e);
-          });
-      } else {
-        this.$router.push({
-          name: "Chat",
-          params: { name: obj.fullname },
-        });
-      }
     },
     enterChat() {
       this.$router.push({ name: "Chat", params: { name: "eiei" } });
