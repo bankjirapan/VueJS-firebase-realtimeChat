@@ -6,7 +6,8 @@
 </h6>
 
 
-Web Application group chat used firebase store version 7
+## Repository นี้คืออะไร <br>
+VueJS-firebase-realtimeChat คือโปรเจกต์ที่สำหรับทดลองฝึกของผมเอง โดยเป็นการใช้เทคโนโยลีง่ายๆ คือ VueJS2 และ firebase ซึ่งทำขึ้นพื่อมาเรียนรู้การใช้งานเบื้องต้น แต่มันก็สามารถนำไปใช้งานได้จริงเช่นกัน หากมีข้อเสนอแนะเกี่ยวกับโค้ด หรืออยากทำเพิ่มเติม เกี่ยวกับโปรดเจกต์นี้ สามารถส่ง PR ได้เลยครับ
 
 We use [VueJS](https://vuejs.org/)
 
