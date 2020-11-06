@@ -127,7 +127,7 @@ export default {
             console.log("OK");
             this.$router.push({
               name: "Chat",
-              params: { name: loggedIn.user.displayName },
+              params: { name: result.user.displayName },
             });
           }
         })
@@ -136,24 +136,57 @@ export default {
           console.log(e);
         });
     },
-    socialFacecbookLogin: function () {
+     socialFacecbookLogin: function () {
       const provide = new firebase.auth.FacebookAuthProvider();
       firebase
         .auth()
         .signInWithPopup(provide)
-        .then((result) => {
+        .then(async (result) => {
           // create user in db
-          let obj = {
-            facebook_id: result.additionalUserInfo.profile.id,
-            fullname: result.additionalUserInfo.profile.name,
-            email: result.additionalUserInfo.profile.email,
-            profile_image: result.user.photoURL + "?height=500",
-            user_type_id: 1,
-          };
-          console.log(obj);
+          // let obj = {
+          //   facebook_id: result.additionalUserInfo.profile.id,
+          //   fullname: result.additionalUserInfo.profile.name,
+          //   email: result.additionalUserInfo.profile.email,
+          //   profile_image: result.user.photoURL + "?height=500",
+          //   user_type_id: 1,
+          // };
+          if (result.additionalUserInfo.isNewUser) {
+            users.push({
+              email : result.additionalUserInfo.profile.email,
+              userId: result.user.uid,
+              role: 0,
+            });
+          }
+
+          let userId = result.user.uid;
+
+          let userData = await users
+            .orderByChild("userId")
+            .equalTo(userId)
+            .once("value")
+            .then((snapshot) => {
+              return snapshot.val();
+            });
+
+          if (userData == null) {
+            this.$swal("Please register before signin");
+          }
+
+          let keyData = Object.keys(userData)[0];
+
+          if (userData[keyData].role == 0) {
+            this.$swal("You not has permission.");
+          } else {
+            console.log("OK");
+            this.$router.push({
+              name: "Chat",
+              params: { name: result.user.displayName },
+            });
+          }
         })
-        .catch((err) => {
-          alert("Oops. " + err.message);
+
+        .catch((e) => {
+          this.$swal(e.message)
         });
     },
     enterChat() {
