@@ -20,7 +20,7 @@ We use [VueJS](https://vuejs.org/)
   git clone https://github.com/bankjirapan/VueJS-firebase-realtimeChat.git
 ```
 
-2.  **Install Project**
+2.  **ติดตั้ง Package**
 
     The Gatsby CLI helps you create new sites using Gatsby starters (like this one!)
 
@@ -28,8 +28,29 @@ We use [VueJS](https://vuejs.org/)
     # install
     npm install
     ```
+3. ** ตั้งค่า Database
+ ก่อนจะตั้งค่าในส่วนนี้อย่าลืมไปสร้าง Project ใน Firebase ก่อนนะครับ ไฟล์ตั้งค่าจะอยู่ที่ `` firebase/config.js ``
+ ```
+import { initializeApp } from "firebase";
 
-3.  **Run project** 
+const app = initializeApp({
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+});
+
+
+export const database = app.database();
+export const messages = database.ref("messages");
+export const users = database.ref("users");
+export const databaseURL = "";
+
+ ```
+
+4.  **Run project** 
 
     ``` bash
     # install dependencies
@@ -48,5 +69,6 @@ We use [VueJS](https://vuejs.org/)
 ## Screenshot <br>
 ![alt text](https://raw.githubusercontent.com/bankjirapan/VueJS-firebase-realtimeChat/master/img/1.png)
 ![alt text](https://raw.githubusercontent.com/bankjirapan/VueJS-firebase-realtimeChat/master/img/2.png)
+![alt text](https://raw.githubusercontent.com/bankjirapan/VueJS-firebase-realtimeChat/master/img/3.png)
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
