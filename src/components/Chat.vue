@@ -1,6 +1,8 @@
 <template>
   <div class="chat container">
-    <h2 class="center teal-text">Chat Room</h2>
+    <div class="center teal-text">
+      <h2>Chat Room</h2>
+    </div>
 
     <div class="card">
       <div class="card-content">
@@ -19,12 +21,15 @@
       </div>
     </div>
     <!-- <h2>Chat {{ this.name }}</h2> -->
+    <div align="right">    <button class="btn red" @click="logout">Logout</button></div>
+
   </div>
 </template>
 
 <script>
 import moment from "moment";
 import NewMessage from "@/components/NewMessage";
+import firebase from "firebase";
 import { messages, users } from "../firebase/config";
 
 export default {
@@ -45,34 +50,45 @@ export default {
     messages.on("value", (snapshot) => {
       this.messages = snapshot.val();
     });
-    // contactRef.on("value", snapshot => {
-    //   this.contacts = snapshot.val();
-    // });
   },
   methods: {
     async isAuth() {
-      let userDataItem = JSON.parse(localStorage.getItem("userData"));
+      await firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+          let userId = user.uid;
 
-      if (userDataItem == null) {
-        this.$router.push({
-          name: "Welcome",
-        });
-      } else {
-        let userData = await users
-          .orderByChild("email")
-          .equalTo(userDataItem.email)
-          .once("value")
-          .then((snapshot) => {
-            return snapshot.val();
-          });
+          let userData = await users
+            .orderByChild("userId")
+            .equalTo(userId)
+            .once("value")
+            .then((snapshot) => {
+              return snapshot.val();
+            });
 
-        if (userData == null) {
+          let keyData = Object.keys(userData)[0];
+
+          if (userData[keyData].role == 0) {
+            this.$swal("You not has permission.");
+            this.$router.push({
+              name: "Welcome",
+            });
+          }
+        } else {
+          console.log("object");
+          // No user is signed in.
           this.$router.push({
             name: "Welcome",
           });
         }
-      }
+      });
     },
+    logout(){
+      firebase.auth().signOut().then((loggedOut) =>{
+          this.$router.push({
+            name: "Welcome",
+          });
+      })
+    }
   },
 };
 </script>
